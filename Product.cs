@@ -5,10 +5,13 @@ namespace WorkingWithEFCore_Northwind
 {
     public class Product
     {
+        [Key]
+        [Column("ProductID")]
         public int Id { get; set; }
         
         [Required]
         [StringLength(40)]
+        [Column("ProductName")]
         public string Name { get; set; }
         
         [Column("UnitPrice", TypeName = "money")]
