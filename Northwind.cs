@@ -25,6 +25,9 @@ namespace WorkingWithEFCore_Northwind
             modelBuilder.Entity<Product>()
                 .Property(product => product.Cost)
                 .HasConversion<double>();
+
+            modelBuilder.Entity<Product>()
+                .HasQueryFilter(product => !product.Discontinued);
         }
     }
 }
