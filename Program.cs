@@ -49,9 +49,13 @@ static void QueryingProducts()
 {
     using (var db = new Northwind())
     {
-        Console.Write("Enter a price: ");
-        string productsInRange = Console.ReadLine();
-        decimal price = decimal.Round(decimal.Parse(productsInRange), 2);
+        string productsInRange;
+        decimal price;
+        do
+        {
+            Console.Write("Enter a price: ");
+            productsInRange = Console.ReadLine();
+        } while (!decimal.TryParse(productsInRange, out price));
 
         IQueryable<Product> prods = db.Products
             .Where(product => product.Cost > price)
@@ -66,5 +70,5 @@ static void QueryingProducts()
 }
 
 // QueryingCategories();
-FilteredIncludes();
-// QueryingProducts();
+// FilteredIncludes();
+QueryingProducts();
