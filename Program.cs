@@ -19,5 +19,29 @@ static void QueryingCategories()
     }
 }
 
-QueryingCategories();
+static void FilteredIncludes()
+{
+    using (var db = new Northwind())
+    {
+        Console.Write("Enter a minimum for units in stock: ");
+        string unitsInStock = Console.ReadLine();
+        int stock = int.Parse(unitsInStock);
 
+        IQueryable<Category> categories = db.Categories
+            .Include(c => c.Products
+                .Where(p => p.Stock >= stock));
+
+        foreach (var cat in categories)
+        {
+            Console.WriteLine($"{cat.Name} has {cat.Products.Count} products with a minimum of {stock} units in stock.");
+
+            foreach (var prod in cat.Products)
+            {
+                Console.WriteLine($"    {prod.Name} has {prod.Stock} units in stock.");    
+            }
+        }
+    }
+}
+
+// QueryingCategories();
+FilteredIncludes();
