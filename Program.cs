@@ -43,5 +43,26 @@ static void FilteredIncludes()
     }
 }
 
+static void QueryingProducts()
+{
+    using (var db = new Northwind())
+    {
+        Console.Write("Enter a price: ");
+        string productsInRange = Console.ReadLine();
+        decimal price = decimal.Round(decimal.Parse(productsInRange), 2);
+
+        IQueryable<Product> prods = db.Products
+            .Where(product => product.Cost > price)
+            .OrderByDescending(product => product.Cost);
+
+        foreach (var item in prods)
+        {
+            Console.WriteLine("{0}: {1} costs {2:$#,##0.00} and has {3} in stock.",
+                item.Id, item.Name, item.Cost, item.Stock);
+        }
+    }
+}
+
 // QueryingCategories();
-FilteredIncludes();
+// FilteredIncludes();
+QueryingProducts();
