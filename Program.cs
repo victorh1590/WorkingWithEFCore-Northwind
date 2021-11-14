@@ -31,6 +31,8 @@ static void FilteredIncludes()
             .Include(c => c.Products
                 .Where(p => p.Stock >= stock));
 
+        Console.WriteLine($"ToQueryString: {categories.ToQueryString()}\n");
+        
         foreach (var cat in categories)
         {
             Console.WriteLine($"{cat.Name} has {cat.Products.Count} products with a minimum of {stock} units in stock.");
@@ -64,5 +66,5 @@ static void QueryingProducts()
 }
 
 // QueryingCategories();
-// FilteredIncludes();
-QueryingProducts();
+FilteredIncludes();
+// QueryingProducts();
