@@ -12,9 +12,21 @@ static void QueryingCategories()
 
         IQueryable<Category> cats = db.Categories;
             // .Include(c => c.Products);
+            
+        db.ChangeTracker.LazyLoadingEnabled = false;
 
         foreach (Category c in cats)
         {
+            Console.WriteLine($"Explicitly load products for {c.Name}? (Y/N): ");
+            ConsoleKeyInfo key = Console.ReadKey();
+            Console.WriteLine();
+            
+            if (key.Key == ConsoleKey.Y)
+            {
+                var products = db.Entry(c).Collection(c => c.Products);
+                if(!products.IsLoaded) products.Load();
+            }
+
             Console.WriteLine($"{c.Name} has {c.Products.Count}.");
         }
     }
