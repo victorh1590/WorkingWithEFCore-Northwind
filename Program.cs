@@ -10,7 +10,8 @@ static void QueryingCategories()
     {
         Console.WriteLine("Categories and how many products they have:");
 
-        IQueryable<Category> cats = db.Categories.Include(c => c.Products);
+        IQueryable<Category> cats = db.Categories;
+            // .Include(c => c.Products);
 
         foreach (Category c in cats)
         {
@@ -87,7 +88,7 @@ static void QueryingWithLike()
     }
 }
 
-// QueryingCategories();
+QueryingCategories();
 // FilteredIncludes();
 // QueryingProducts();
-QueryingWithLike();
+// QueryingWithLike();
