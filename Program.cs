@@ -6,54 +6,50 @@ using WorkingWithEFCore_Northwind;
 
 static void QueryingCategories()
 {
-    using (var db = new Northwind())
+    using var db = new Northwind();
+    Console.WriteLine("Categories and how many products they have:");
+
+    IQueryable<Category> cats = db.Categories;
+    // .Include(c => c.Products);
+            
+    db.ChangeTracker.LazyLoadingEnabled = false;
+
+    foreach (Category c in cats)
     {
-        Console.WriteLine("Categories and how many products they have:");
-
-        IQueryable<Category> cats = db.Categories;
-            // .Include(c => c.Products);
+        Console.WriteLine($"Explicitly load products for {c.Name}? (Y/N): ");
+        ConsoleKeyInfo key = Console.ReadKey();
+        Console.WriteLine();
             
-        db.ChangeTracker.LazyLoadingEnabled = false;
-
-        foreach (Category c in cats)
+        if (key.Key == ConsoleKey.Y)
         {
-            Console.WriteLine($"Explicitly load products for {c.Name}? (Y/N): ");
-            ConsoleKeyInfo key = Console.ReadKey();
-            Console.WriteLine();
-            
-            if (key.Key == ConsoleKey.Y)
-            {
-                var products = db.Entry(c).Collection(c => c.Products);
-                if(!products.IsLoaded) products.Load();
-            }
-
-            Console.WriteLine($"{c.Name} has {c.Products.Count}.");
+            var products = db.Entry(c).Collection(c => c.Products);
+            if(!products.IsLoaded) products.Load();
         }
+
+        Console.WriteLine($"{c.Name} has {c.Products.Count}.");
     }
 }
 
 static void FilteredIncludes()
 {
-    using (var db = new Northwind())
-    {
-        Console.Write("Enter a minimum for units in stock: ");
-        string unitsInStock = Console.ReadLine();
-        int stock = int.Parse(unitsInStock);
+    using var db = new Northwind();
+    Console.Write("Enter a minimum for units in stock: ");
+    string? unitsInStock = Console.ReadLine();
+    int stock = int.Parse(unitsInStock ?? string.Empty);
 
-        IQueryable<Category> categories = db.Categories
-            .Include(c => c.Products
-                .Where(p => p.Stock >= stock));
+    IQueryable<Category> categories = db.Categories
+        .Include(c => c.Products
+            .Where(p => p.Stock >= stock));
 
-        Console.WriteLine($"ToQueryString: {categories.ToQueryString()}\n");
+    Console.WriteLine($"ToQueryString: {categories.ToQueryString()}\n");
         
-        foreach (var cat in categories)
-        {
-            Console.WriteLine($"{cat.Name} has {cat.Products.Count} products with a minimum of {stock} units in stock.");
+    foreach (var cat in categories)
+    {
+        Console.WriteLine($"{cat.Name} has {cat.Products.Count} products with a minimum of {stock} units in stock.");
 
-            foreach (var prod in cat.Products)
-            {
-                Console.WriteLine($"    {prod.Name} has {prod.Stock} units in stock.");    
-            }
+        foreach (var prod in cat.Products)
+        {
+            Console.WriteLine($"    {prod.Name} has {prod.Stock} units in stock.");    
         }
     }
 }
@@ -62,7 +58,7 @@ static void QueryingProducts()
 {
     using (var db = new Northwind())
     {
-        string productsInRange;
+        string? productsInRange;
         decimal price;
         do
         {
@@ -87,7 +83,7 @@ static void QueryingWithLike()
     using (var db = new Northwind())
     {
         Console.Write("Enter part of the product name: ");
-        string input = Console.ReadLine();
+        string? input = Console.ReadLine();
 
         IQueryable<Product> products = db.Products
             .Where(p => EF.Functions.Like(p.Name, $"%{input}%"));
