@@ -113,6 +113,16 @@ static bool AddProduct(int categoryId, string name, decimal? price)
     return db.SaveChanges() == 1;
 }
 
+static bool IncreaseProductPrice(string name, decimal amount)
+{
+    using var db = new Northwind();
+    Product updateProduct = db.Products
+        .OrderBy(p => p.Id)
+        .Last(p => EF.Functions.Like(p.Name, $"{name}%"));
+    updateProduct.Cost += amount;
+    return db.SaveChanges() == 1;
+}
+
 static void ListProducts()
 {
     using var db = new Northwind();
@@ -131,5 +141,8 @@ static void ListProducts()
 // QueryingProducts();
 // QueryingWithLike();
 
-// if (AddProduct(6, "Bob's Burgers II", 500M)) Console.WriteLine("Add product successful.");
+// if (AddProduct(6, "Bob's Burgers II", 500M))
+//     Console.WriteLine("Add product successful.");
+if (IncreaseProductPrice("Bob", 20M)) 
+    Console.WriteLine("Update product price successful.");
 ListProducts();
