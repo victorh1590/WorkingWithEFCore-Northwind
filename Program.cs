@@ -116,9 +116,11 @@ static bool AddProduct(int categoryId, string name, decimal? price)
 static bool IncreaseProductPrice(string name, decimal amount)
 {
     using var db = new Northwind();
-    Product updateProduct = db.Products
-        .OrderBy(p => p.Id)
-        .Last(p => EF.Functions.Like(p.Name, $"{name}%"));
+    // Product updateProduct = db.Products
+    //     .OrderBy(p => p.Id)
+    //     .Last(p => EF.Functions.Like(p.Name, $"{name}%"));
+
+    Product updateProduct = db.Products.First(p => p.Name.StartsWith(name));
     updateProduct.Cost += amount;
     return db.SaveChanges() == 1;
 }
