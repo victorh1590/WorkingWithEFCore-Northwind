@@ -1,9 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using WorkingWithEFCore_Northwind;
+using Microsoft.EntityFrameworkCore.Storage;
 
 static void QueryingCategories()
 {
@@ -113,9 +116,17 @@ static bool AddProduct(int categoryId, string name, decimal? price)
 static int DeleteProduct(string name)
 {
     using var db = new Northwind();
+    using IDbContextTransaction transaction = db.Database.BeginTransaction();
+    
+    Console.WriteLine("Transaction isolation level: {0}", 
+        transaction.GetDbTransaction().IsolationLevel);
+    
     IEnumerable<Product> productsToRemove = db.Products.Where(p => p.Name.StartsWith(name));
     db.Products.RemoveRange(productsToRemove);
-    return db.SaveChanges();
+
+    int entriesAffected = db.SaveChanges();
+    transaction.Commit();
+    return entriesAffected;
 }
 
 static bool IncreaseProductPrice(string name, decimal amount)
@@ -157,5 +168,5 @@ static void ListProducts()
 int deleted = DeleteProduct("Bob");
 Console.WriteLine($"{deleted} product(s) were deleted.");
 
-ListProducts();
+// ListProducts();
 
