@@ -100,7 +100,36 @@ static void QueryingWithLike()
     }
 }
 
-QueryingCategories();
+static bool AddProduct(int categoryId, string name, decimal? price)
+{
+    using var db = new Northwind();
+    var newProduct = new Product
+    {
+        CategoryId = categoryId,
+        Name = name,
+        Cost = price
+    };
+    db.Products.Add(newProduct);
+    return db.SaveChanges() == 1;
+}
+
+static void ListProducts()
+{
+    using var db = new Northwind();
+    
+    Console.WriteLine("{0,-3} {1,-35} {2,8} {3,5} {4}", "ID", "Product Name", "Cost", "Stock", "Disc.");
+
+    foreach (var item in db.Products.OrderByDescending(p => p.Cost))
+    {
+        Console.WriteLine("{0:000} {1,-35} {2,8:$#,##0.00} {3,5} {4}",
+            item.Id, item.Name, item.Cost, item.Stock, item.Discontinued);
+    }
+}
+
+// QueryingCategories();
 // FilteredIncludes();
 // QueryingProducts();
 // QueryingWithLike();
+
+// if (AddProduct(6, "Bob's Burgers II", 500M)) Console.WriteLine("Add product successful.");
+ListProducts();
