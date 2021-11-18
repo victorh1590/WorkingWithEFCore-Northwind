@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using WorkingWithEFCore_Northwind;
@@ -109,6 +110,14 @@ static bool AddProduct(int categoryId, string name, decimal? price)
     return db.SaveChanges() == 1;
 }
 
+static int DeleteProduct(string name)
+{
+    using var db = new Northwind();
+    IEnumerable<Product> productsToRemove = db.Products.Where(p => p.Name.StartsWith(name));
+    db.Products.RemoveRange(productsToRemove);
+    return db.SaveChanges();
+}
+
 static bool IncreaseProductPrice(string name, decimal amount)
 {
     using var db = new Northwind();
@@ -141,6 +150,12 @@ static void ListProducts()
 
 // if (AddProduct(6, "Bob's Burgers II", 500M))
 //     Console.WriteLine("Add product successful.");
-if (IncreaseProductPrice("Bob", 20M)) 
-    Console.WriteLine("Update product price successful.");
+
+// if (IncreaseProductPrice("Bob", 20M)) 
+//     Console.WriteLine("Update product price successful.");
+
+int deleted = DeleteProduct("Bob");
+Console.WriteLine($"{deleted} product(s) were deleted.");
+
 ListProducts();
+
